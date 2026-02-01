@@ -28,8 +28,8 @@ export default function Home() {
             <Image
               src="/cloudlink-logo.png"
               alt="Cloudlink"
-              width={50}
-              height={50}
+              width={150}
+              height={150}
               priority
             />
             <div className="text-lg font-semibold tracking-tight">Cloudlink</div>
@@ -284,7 +284,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-16 flex items-center justify-between gap-4 text-xs text-white/50">
           <div className="flex items-center gap-2">
-            <Image src="/cloudlink-logo.png" alt="Cloudlink" width={30} height={30} />
+            <Image src="/cloudlink-logo.png" alt="Cloudlink" width={60} height={60} />
             <span>© {new Date().getFullYear()} Cloudlink. All rights reserved.</span>
           </div>
           <a href="#waitlist" className="hover:text-white/70">
