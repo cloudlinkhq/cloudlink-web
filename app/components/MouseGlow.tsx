@@ -17,23 +17,24 @@ export default function MouseGlow() {
       el.style.setProperty("--mx", `${x}%`);
       el.style.setProperty("--my", `${y}%`);
 
-      // enable glow only after first movement
-      setActive(true);
+      if (!active) setActive(true);
     };
 
+    // pointermove covers mouse/trackpad; works best on desktop
     window.addEventListener("pointermove", move, { passive: true });
-    return () => window.removeEventListener("pointermove", move);
-  }, []);
 
-  if (!active) return null; // ← THIS is the key line
+    return () => window.removeEventListener("pointermove", move);
+  }, [active]);
 
   return (
     <div
       ref={ref}
       className="pointer-events-none fixed inset-0 z-0"
       style={{
-        background:
-          "radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,0.12), transparent 55%)",
+        // IMPORTANT: no background at all until first move (prevents “bg glow”)
+        background: active
+          ? "radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,0.12), transparent 55%)"
+          : "none",
       }}
     />
   );
