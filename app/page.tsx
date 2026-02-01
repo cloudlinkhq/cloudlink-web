@@ -1,102 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Image from "next/image";
 import WaitlistForm from "./components/WaitlistForm";
-import { motion, type Variants } from "framer-motion";
-
-const easeApple: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-const revealItem: Variants = {
-  hidden: { opacity: 0, y: 14, filter: "blur(8px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.75, ease: easeApple },
-  },
-};
-
-const staggerWrap: Variants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.09, delayChildren: 0.05 },
-  },
-};
-
-function Reveal({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <motion.div
-      className={className}
-      variants={revealItem}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function Stagger({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <motion.div
-      className={className}
-      variants={staggerWrap}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function StaggerItem({ children }: { children: React.ReactNode }) {
-  return <motion.div variants={revealItem}>{children}</motion.div>;
-}
+import MouseGlow from "./components/MouseGlow";
+import Reveal from "./components/Reveal";
+import { Stagger, StaggerItem } from "./components/Stagger";
 
 export default function Home() {
-  const bgRef = useRef<HTMLDivElement | null>(null);
-  const raf = useRef<number | null>(null);
-
-  useEffect(() => {
-    const el = bgRef.current;
-    if (!el) return;
-
-    // default glow position
-    el.style.setProperty("--mx", "50%");
-    el.style.setProperty("--my", "20%");
-
-    const onMove = (e: PointerEvent) => {
-      if (raf.current) cancelAnimationFrame(raf.current);
-      raf.current = requestAnimationFrame(() => {
-        const x = (e.clientX / window.innerWidth) * 100;
-        const y = (e.clientY / window.innerHeight) * 100;
-        el.style.setProperty("--mx", `${x}%`);
-        el.style.setProperty("--my", `${y}%`);
-      });
-    };
-
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      if (raf.current) cancelAnimationFrame(raf.current);
-    };
-  }, []);
-
   const cardClass =
     "rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition hover:-translate-y-0.5 hover:border-white/20";
   const cardClassSm =
@@ -126,39 +36,22 @@ export default function Home() {
   ];
 
   const trust = [
-    {
-      title: "Read-only permissions",
-      desc: "No write access. No infrastructure changes possible.",
-    },
-    {
-      title: "No logs or PII",
-      desc: "We do not need application logs or customer data.",
-    },
+    { title: "Read-only permissions", desc: "No write access. No infrastructure changes possible." },
+    { title: "No logs or PII", desc: "We do not need application logs or customer data." },
     { title: "Auditable access", desc: "All access is visible in your AWS CloudTrail." },
     { title: "Revocable anytime", desc: "Remove the role to immediately disable access." },
   ];
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* Background polish (mouse-follow glow) */}
-      <div ref={bgRef} className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.12),transparent_55%)]" />
-        <div className="absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:56px_56px]" />
-      </div>
+      <MouseGlow />
 
       <div className="relative mx-auto max-w-5xl px-6 py-16">
         {/* Top bar */}
         <Reveal>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Image
-                src="/cloudlink-logo.png"
-                alt="Cloudlink"
-                width={150}
-                height={150}
-                priority
-              />
+              <Image src="/cloudlink-logo.png" alt="Cloudlink" width={150} height={150} priority />
               <div className="text-lg font-semibold tracking-tight">Cloudlink</div>
             </div>
 
@@ -206,7 +99,7 @@ export default function Home() {
           </section>
         </Reveal>
 
-        {/* Who it's for / Not for */}
+        {/* Who it's for */}
         <section className="mt-16">
           <Stagger>
             <StaggerItem>
@@ -292,7 +185,7 @@ export default function Home() {
           </Stagger>
         </section>
 
-        {/* Sample output */}
+        {/* What you get */}
         <section className="mt-16">
           <Stagger>
             <StaggerItem>
@@ -340,12 +233,6 @@ export default function Home() {
                       <span className="text-sm text-white/70">Est. monthly impact</span>
                       <span className="text-sm font-semibold">+$4,200</span>
                     </div>
-                  </div>
-
-                  <div className="mt-6 flex flex-wrap gap-2 text-xs text-white/60">
-                    <span className="rounded-full border border-white/15 px-3 py-1">Deploy-linked</span>
-                    <span className="rounded-full border border-white/15 px-3 py-1">Service baseline</span>
-                    <span className="rounded-full border border-white/15 px-3 py-1">Impact estimate</span>
                   </div>
                 </div>
               </StaggerItem>
